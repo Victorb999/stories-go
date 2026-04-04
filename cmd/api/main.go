@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 	"time"
 
@@ -58,6 +59,8 @@ func main() {
 
 	r.Mount("/api/v1/stories", storyHandler.Routes())
 
+	spaHandler(r, "/dist")
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
@@ -93,4 +96,17 @@ func main() {
 		log.Error("forced shutdown", "err", err)
 	}
 	log.Info("server exited")
+}
+
+func spaHandler(r chi.Router, publicDir string) {
+	fs := http.FileServer(http.Dir(publicDir))
+	r.Get("/*", func(w http.ResponseWriter, req *http.Request) {
+		path := filepath.Join(publicDir, req.URL.Path)
+		info, err := os.Stat(path)
+		if os.IsNotExist(err) || info.IsDir() {
+			http.ServeFile(w, req, filepath.Join(publicDir, "index.html"))
+			return
+		}
+		fs.ServeHTTP(w, req)
+	})
 }
