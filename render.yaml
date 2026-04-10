@@ -1,0 +1,22 @@
+# render.yaml – Render Blueprint (Infrastructure as Code)
+# https://docs.render.com/infrastructure-as-code
+#
+# Deploy: Connect this repo on https://dashboard.render.com
+# Render will auto-detect this file and configure everything.
+
+services:
+  - type: web
+    name: stories-go
+    runtime: docker
+    plan: free
+    region: oregon
+    healthCheckPath: /health
+    envVars:
+      - key: DATA_DIR
+        value: /data
+      - key: PORT
+        value: "8080"
+    disk:
+      name: stories-data
+      mountPath: /data
+      sizeGB: 1
