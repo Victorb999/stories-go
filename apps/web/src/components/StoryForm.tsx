@@ -109,7 +109,7 @@ export function StoryForm({ initialData, onSubmit, onCancel, isSubmitting }: Sto
             </div>
 
             <div className="flex justify-end gap-2 pt-4">
-                <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting} className="border-border text-white hover:bg-white/10 hover:text-white">
+                <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
                     Cancelar
                 </Button>
                 <Button type="submit" disabled={isSubmitting} className="bg-primary text-primary-foreground hover:bg-primary/90">

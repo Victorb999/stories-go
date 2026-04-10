@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import { AppShell } from '@/components/AppShell'
 import { HomePage } from '@/pages/HomePage'
+import { LibraryPage } from '@/pages/LibraryPage'
 import { StoryPage } from '@/pages/StoryPage'
 import { AdminPage } from '@/pages/AdminPage'
 
@@ -9,6 +10,7 @@ function App() {
     <Routes>
       <Route element={<AppShell />}>
         <Route path="/" element={<HomePage />} />
+        <Route path="/biblioteca" element={<LibraryPage />} />
         <Route path="/stories/:id" element={<StoryPage />} />
         <Route path="/admin" element={<AdminPage />} />
       </Route>

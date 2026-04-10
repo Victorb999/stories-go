@@ -52,13 +52,13 @@ export function AdminPage() {
         <div className="space-y-8 animate-in fade-in duration-500">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-white">Gerenciamento</h1>
-                    <p className="text-primary/80 mt-1 text-sm">Adicione, edite ou remova histórias.</p>
+                    <h1 className="text-3xl font-bold tracking-tight text-foreground">Gerenciamento</h1>
+                    <p className="text-muted-foreground mt-1 text-sm">Adicione, edite ou remova histórias.</p>
                 </div>
 
                 <div className="flex gap-2">
                     {stories.length === 0 && (
-                        <Button variant="outline" onClick={handleSeed} disabled={isPending} className="border-[#F9A8BB] text-[#F9A8BB] hover:bg-[#F9A8BB]/10">
+                        <Button variant="outline" onClick={handleSeed} disabled={isPending}>
                             <Database className="w-4 h-4 mr-2" />
                             Preencher com Exemplo
                         </Button>
@@ -74,7 +74,7 @@ export function AdminPage() {
                                 Nova História
                             </Button>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-[600px] bg-[#140D4F] text-white border-border">
+                        <DialogContent className="sm:max-w-[600px] bg-card text-card-foreground border-border">
                             <DialogHeader>
                                 <DialogTitle>{editingStory ? 'Editar História' : 'Nova História'}</DialogTitle>
                             </DialogHeader>
@@ -89,10 +89,10 @@ export function AdminPage() {
                 </div>
             </div>
 
-            <div className="bg-[#140D4F] rounded-2xl shadow-sm border border-border overflow-hidden">
+            <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm">
-                        <thead className="bg-[#201773] text-primary/90 font-medium">
+                        <thead className="bg-muted text-muted-foreground font-medium">
                             <tr>
                                 <th className="px-6 py-4">ID</th>
                                 <th className="px-6 py-4">Título</th>
@@ -111,16 +111,16 @@ export function AdminPage() {
                                 </tr>
                             ) : (
                                 stories.map(story => (
-                                    <tr key={story.id} className="hover:bg-[#201773]/50 transition-colors">
-                                        <td className="px-6 py-4 text-white/50">#{story.id}</td>
-                                        <td className="px-6 py-4 font-medium text-white">{story.title}</td>
-                                        <td className="px-6 py-4 text-white/80">{story.author}</td>
+                                    <tr key={story.id} className="hover:bg-muted/50 transition-colors">
+                                        <td className="px-6 py-4 text-muted-foreground">#{story.id}</td>
+                                        <td className="px-6 py-4 font-medium text-foreground">{story.title}</td>
+                                        <td className="px-6 py-4 text-foreground/80">{story.author}</td>
                                         <td className="px-6 py-4">
-                                            <span className={`px-2 py-1 rounded-md text-xs font-semibold ${story.size === 'small' ? 'bg-primary/20 text-primary' : 'bg-green-500/20 text-green-400'}`}>
+                                            <span className={`px-2 py-1 rounded-md text-xs font-semibold ${story.size === 'small' ? 'bg-primary/15 text-primary' : 'bg-green-500/15 text-green-700'}`}>
                                                 {story.size === 'small' ? 'Curta' : 'Longa'}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 text-white/80">
+                                        <td className="px-6 py-4 text-foreground/80">
                                             {story.ai_generated ? '✨ Sim' : 'Não'}
                                         </td>
                                         <td className="px-6 py-4 text-right space-x-2 whitespace-nowrap">
@@ -131,7 +131,7 @@ export function AdminPage() {
                                                     setEditingStory(story)
                                                     setIsFormOpen(true)
                                                 }}
-                                                className="hover:bg-primary/20 hover:text-primary"
+                                                className="hover:bg-primary/10 hover:text-primary"
                                             >
                                                 <Edit2 className="w-4 h-4 text-primary" />
                                             </Button>
@@ -140,7 +140,7 @@ export function AdminPage() {
                                                 size="icon"
                                                 onClick={() => handleDelete(story.id)}
                                                 disabled={isPending}
-                                                className="hover:bg-red-500/20 hover:text-red-400 text-red-500"
+                                                className="hover:bg-red-500/10 hover:text-red-600 text-red-500"
                                             >
                                                 <Trash2 className="w-4 h-4" />
                                             </Button>

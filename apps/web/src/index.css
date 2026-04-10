@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -6,9 +6,10 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-heading: var(--font-sans);
-  --font-sans: 'Nunito', sans-serif;
+  --font-heading: 'Plus Jakarta Sans', var(--font-sans);
+  --font-sans: 'Plus Jakarta Sans', 'Nunito', sans-serif;
   --font-serif: 'Lora', serif;
+
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -47,49 +48,90 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Extended palette colors */
+  --color-surface-tint: var(--surface-tint);
+  --color-tertiary: var(--tertiary);
+  --color-tertiary-container: var(--tertiary-container);
+  --color-on-tertiary: var(--on-tertiary);
+  --color-on-tertiary-container: var(--on-tertiary-container);
+  --color-secondary-container: var(--secondary-container);
+  --color-on-secondary-container: var(--on-secondary-container);
+  --color-primary-container: var(--primary-container);
+  --color-on-primary-container: var(--on-primary-container);
+  --color-surface-variant: var(--surface-variant);
+  --color-on-surface-variant: var(--on-surface-variant);
+  --color-outline-soft: var(--outline-variant);
 }
 
 :root {
-  --background: #1A1265;
-  --foreground: #ffffff;
-  --card: #201773;
-  --card-foreground: #ffffff;
-  --popover: #201773;
-  --popover-foreground: #ffffff;
-  --primary: #F9A8BB;
-  --primary-foreground: #1A1265;
-  --secondary: #2C247A;
-  --secondary-foreground: #F9A8BB;
-  --muted: #2C247A;
-  --muted-foreground: #F9A8BB;
-  --accent: #F9A8BB;
-  --accent-foreground: #1A1265;
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: #3A328A;
-  --input: #3A328A;
-  --ring: #F9A8BB;
-  --radius: 0.625rem;
+  --background: #fbf8ff;
+  --foreground: #1a1b23;
+  --card: #ffffff;
+  --card-foreground: #1a1b23;
+  --popover: #ffffff;
+  --popover-foreground: #1a1b23;
+  --primary: #a43073;
+  --primary-foreground: #ffffff;
+  --secondary: #00668a;
+  --secondary-foreground: #ffffff;
+  --muted: #f4f2fe;
+  --muted-foreground: #494458;
+  --accent: #ffd8e7;
+  --accent-foreground: #85145a;
+  --destructive: #ba1a1a;
+  --border: #cbc3dc;
+  --input: #e3e1ed;
+  --ring: #a43073;
+  --radius: 1rem;
+
+  /* Extended palette */
+  --surface-tint: #a43073;
+  --tertiary: #006d36;
+  --tertiary-container: #6dfe9c;
+  --on-tertiary: #ffffff;
+  --on-tertiary-container: #005227;
+  --secondary-container: #c4e7ff;
+  --on-secondary-container: #004c69;
+  --primary-container: #ffd8e7;
+  --on-primary-container: #85145a;
+  --surface-variant: #e3e1ed;
+  --on-surface-variant: #494458;
+  --outline-variant: #cbc3dc;
 }
 
 .dark {
-  --background: #1A1265;
-  --foreground: #ffffff;
-  --card: #201773;
-  --card-foreground: #ffffff;
-  --popover: #201773;
-  --popover-foreground: #ffffff;
-  --primary: #F9A8BB;
-  --primary-foreground: #1A1265;
-  --secondary: #2C247A;
-  --secondary-foreground: #F9A8BB;
-  --muted: #2C247A;
-  --muted-foreground: #F9A8BB;
-  --accent: #F9A8BB;
-  --accent-foreground: #1A1265;
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: #3A328A;
-  --input: #3A328A;
-  --ring: #F9A8BB;
+  --background: #1a1b23;
+  --foreground: #e3e1ed;
+  --card: #2f3039;
+  --card-foreground: #e3e1ed;
+  --popover: #2f3039;
+  --popover-foreground: #e3e1ed;
+  --primary: #ffafd3;
+  --primary-foreground: #85145a;
+  --secondary: #7bd0ff;
+  --secondary-foreground: #001e2c;
+  --muted: #2f3039;
+  --muted-foreground: #cbc3dc;
+  --accent: #85145a;
+  --accent-foreground: #ffd8e7;
+  --destructive: #ffdad6;
+  --border: #494458;
+  --input: #494458;
+  --ring: #ffafd3;
+
+  --surface-tint: #ffafd3;
+  --tertiary: #4de082;
+  --tertiary-container: #005227;
+  --on-tertiary: #00210c;
+  --on-tertiary-container: #6dfe9c;
+  --secondary-container: #004c69;
+  --on-secondary-container: #c4e7ff;
+  --primary-container: #85145a;
+  --on-primary-container: #ffd8e7;
+  --surface-variant: #494458;
+  --on-surface-variant: #cbc3dc;
+  --outline-variant: #494458;
 }
 
 @layer base {
@@ -99,6 +141,10 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Plus Jakarta Sans', 'Nunito', sans-serif;
+    background-color: #c4e7ff;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px);
+    background-size: 32px 32px;
   }
 
   html {
@@ -109,13 +155,14 @@
 @layer utilities {
   .scrollbar-hide {
     -ms-overflow-style: none;
-    /* IE and Edge */
     scrollbar-width: none;
-    /* Firefox */
   }
 
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
-    /* Chrome, Safari and Opera */
+  }
+
+  .glass-panel {
+    backdrop-filter: blur(16px);
   }
 }
