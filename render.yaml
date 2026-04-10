@@ -12,7 +12,7 @@ services:
     region: oregon
     healthCheckPath: /health
     envVars:
-      - key: DATA_DIR
-        value: /data
+      - key: DATABASE_URL
+        sync: false
       - key: PORT
         value: "8080"

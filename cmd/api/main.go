@@ -11,6 +11,8 @@ import (
 	"syscall"
 	"time"
 
+	_ "github.com/joho/godotenv/autoload"
+
 	"stories-go/internal/db"
 	"stories-go/internal/handler"
 	"stories-go/internal/repository"
@@ -23,13 +25,13 @@ import (
 func main() {
 	log := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
-	// DATA_DIR lets Fly.io persist the SQLite file in a mounted volume.
-	dataDir := os.Getenv("DATA_DIR")
-	if dataDir == "" {
-		dataDir = "."
+	databaseURL := os.Getenv("DATABASE_URL")
+	if databaseURL == "" {
+		log.Error("DATABASE_URL is required")
+		os.Exit(1)
 	}
 
-	database, err := db.Open(dataDir)
+	database, err := db.Open(databaseURL)
 	if err != nil {
 		log.Error("failed to open database", "err", err)
 		os.Exit(1)
@@ -41,7 +43,10 @@ func main() {
 
 	r := chi.NewRouter()
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:5173", "http://localhost:4173"},
+		AllowedOrigins: []string{"http://localhost:5173", "http://localhost:4173"},
+		AllowOriginFunc: func(r *http.Request, origin string) bool {
+			return true // Allow all for now on Render
+		},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Content-Type"},
 		AllowCredentials: false,

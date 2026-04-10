@@ -27,18 +27,17 @@ func (r *StoryRepository) List(ctx context.Context, f ListFilter) ([]models.Stor
 	query := `SELECT id, title, cover_image, author, content, ai_generated, size, views, created_at, updated_at
 	          FROM stories WHERE 1=1`
 	args := []any{}
+	paramID := 1
 
 	if f.Size != "" {
-		query += " AND size = ?"
+		query += fmt.Sprintf(" AND size = $%d", paramID)
 		args = append(args, f.Size)
+		paramID++
 	}
 	if f.AIGenerated != nil {
-		query += " AND ai_generated = ?"
-		if *f.AIGenerated {
-			args = append(args, 1)
-		} else {
-			args = append(args, 0)
-		}
+		query += fmt.Sprintf(" AND ai_generated = $%d", paramID)
+		args = append(args, *f.AIGenerated)
+		paramID++
 	}
 	query += " ORDER BY created_at DESC"
 
@@ -51,14 +50,12 @@ func (r *StoryRepository) List(ctx context.Context, f ListFilter) ([]models.Stor
 	var stories []models.Story
 	for rows.Next() {
 		var s models.Story
-		var aiGen int
 		if err := rows.Scan(
 			&s.ID, &s.Title, &s.CoverImage, &s.Author, &s.Content,
-			&aiGen, &s.Size, &s.Views, &s.CreatedAt, &s.UpdatedAt,
+			&s.AIGenerated, &s.Size, &s.Views, &s.CreatedAt, &s.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}
-		s.AIGenerated = aiGen == 1
 		stories = append(stories, s)
 	}
 	return stories, rows.Err()
@@ -72,17 +69,16 @@ func (r *StoryRepository) GetByID(ctx context.Context, id int64) (*models.Story,
 	}
 	defer tx.Rollback()
 
-	if _, err := tx.ExecContext(ctx, `UPDATE stories SET views = views + 1 WHERE id = ?`, id); err != nil {
+	if _, err := tx.ExecContext(ctx, `UPDATE stories SET views = views + 1 WHERE id = $1`, id); err != nil {
 		return nil, err
 	}
 
 	var s models.Story
-	var aiGen int
 	err = tx.QueryRowContext(ctx, `
 		SELECT id, title, cover_image, author, content, ai_generated, size, views, created_at, updated_at
-		FROM stories WHERE id = ?`, id).Scan(
+		FROM stories WHERE id = $1`, id).Scan(
 		&s.ID, &s.Title, &s.CoverImage, &s.Author, &s.Content,
-		&aiGen, &s.Size, &s.Views, &s.CreatedAt, &s.UpdatedAt,
+		&s.AIGenerated, &s.Size, &s.Views, &s.CreatedAt, &s.UpdatedAt,
 	)
 	if err == sql.ErrNoRows {
 		return nil, nil
@@ -90,51 +86,46 @@ func (r *StoryRepository) GetByID(ctx context.Context, id int64) (*models.Story,
 	if err != nil {
 		return nil, err
 	}
-	s.AIGenerated = aiGen == 1
 	return &s, tx.Commit()
 }
 
 func (r *StoryRepository) Create(ctx context.Context, s *models.Story) (*models.Story, error) {
 	now := time.Now().UTC()
-	aiGen := boolToInt(s.AIGenerated)
 
-	result, err := r.db.ExecContext(ctx, `
+	var newID int64
+	err := r.db.QueryRowContext(ctx, `
 		INSERT INTO stories (title, cover_image, author, content, ai_generated, size, views, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?)`,
-		s.Title, s.CoverImage, s.Author, s.Content, aiGen, s.Size, now, now,
-	)
+		VALUES ($1, $2, $3, $4, $5, $6, 0, $7, $8) RETURNING id`,
+		s.Title, s.CoverImage, s.Author, s.Content, s.AIGenerated, s.Size, now, now,
+	).Scan(&newID)
+
 	if err != nil {
 		return nil, err
 	}
-	id, err := result.LastInsertId()
-	if err != nil {
-		return nil, err
-	}
-	return r.getByIDRaw(ctx, id)
+	return r.getByIDRaw(ctx, newID)
 }
 
 func (r *StoryRepository) Update(ctx context.Context, id int64, s *models.Story) (*models.Story, error) {
 	now := time.Now().UTC()
-	aiGen := boolToInt(s.AIGenerated)
 
 	res, err := r.db.ExecContext(ctx, `
 		UPDATE stories
-		SET title=?, cover_image=?, author=?, content=?, ai_generated=?, size=?, updated_at=?
-		WHERE id=?`,
-		s.Title, s.CoverImage, s.Author, s.Content, aiGen, s.Size, now, id,
+		SET title=$1, cover_image=$2, author=$3, content=$4, ai_generated=$5, size=$6, updated_at=$7
+		WHERE id=$8`,
+		s.Title, s.CoverImage, s.Author, s.Content, s.AIGenerated, s.Size, now, id,
 	)
 	if err != nil {
 		return nil, err
 	}
 	n, _ := res.RowsAffected()
 	if n == 0 {
-		return nil, nil
+		return nil, nil // Not found
 	}
 	return r.getByIDRaw(ctx, id)
 }
 
 func (r *StoryRepository) Delete(ctx context.Context, id int64) (bool, error) {
-	res, err := r.db.ExecContext(ctx, `DELETE FROM stories WHERE id = ?`, id)
+	res, err := r.db.ExecContext(ctx, `DELETE FROM stories WHERE id = $1`, id)
 	if err != nil {
 		return false, err
 	}
@@ -145,23 +136,14 @@ func (r *StoryRepository) Delete(ctx context.Context, id int64) (bool, error) {
 // getByIDRaw fetches a story without touching the view counter.
 func (r *StoryRepository) getByIDRaw(ctx context.Context, id int64) (*models.Story, error) {
 	var s models.Story
-	var aiGen int
 	err := r.db.QueryRowContext(ctx, `
 		SELECT id, title, cover_image, author, content, ai_generated, size, views, created_at, updated_at
-		FROM stories WHERE id = ?`, id).Scan(
+		FROM stories WHERE id = $1`, id).Scan(
 		&s.ID, &s.Title, &s.CoverImage, &s.Author, &s.Content,
-		&aiGen, &s.Size, &s.Views, &s.CreatedAt, &s.UpdatedAt,
+		&s.AIGenerated, &s.Size, &s.Views, &s.CreatedAt, &s.UpdatedAt,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("getByIDRaw: %w", err)
 	}
-	s.AIGenerated = aiGen == 1
 	return &s, nil
-}
-
-func boolToInt(b bool) int {
-	if b {
-		return 1
-	}
-	return 0
 }
